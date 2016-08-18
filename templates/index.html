@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="static/favicon.ico">
+
+  <title>rhubarb</title>
+
+  <link href="static/lib/bootstrap.css" rel="stylesheet">
+  <link href="static/lib/font-awesome.min.css" rel="stylesheet">
+  <link href="static/lib/jquery-ui.min.css" rel="stylesheet">
+  <link href="static/app.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand">
+          <div class="now-playing-info">
+            <div class="title">Not playing</div>
+            <div class="artist"></div>
+            <div class="album"></div>
+            <div class="progress-text"><span class="current-time"></span> / <span class="duration"></span></div>
+          </div>
+        </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <div class="navbar-inner">
+            <ul class="nav navbar-nav nav-center">
+              <li>
+              <audio id="player" style="padding-top:10px">
+              </audio>
+              <div id="controls">
+                <ul class="control-buttons">
+                  <li id="previous" class="control-button small-button"><i class="fa fa-step-backward" aria-hidden="true"></i></li>
+                  <li id="playpause" class="control-button large-button"><i class="fa fa-play" aria-hidden="true"></i></li>
+                  <li id="next" class="control-button small-button"><i class="fa fa-step-forward" aria-hidden="true"></i></li>
+                </ul>
+              </div>
+              </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right right-controls">
+              <li id="shuffle" class="player-option">
+                <i class="fa fa-random"></i>
+              </li>
+              <li id="repeat" class="player-option">
+                <i class="fa fa-repeat"></i>
+              </li>
+              <li id="volume">
+                <i class="fa fa-volume-up"></i>
+              </li>
+              <li id="volume-slider">
+                <div id="volume-slider-bar"></div>
+              </li>
+            </ul>
+          </div>
+        <!--
+        <form class="navbar-form navbar-right">
+          <input type="text" class="form-control" placeholder="Search...">
+        </form>
+      -->
+      </div>
+    </div>
+    <div id="progress">
+      <div id="bar"></div>
+    </div>
+  </nav>
+
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-3 col-md-2 sidebar">
+      <ul class="nav nav-sidebar section-links">
+        <li><a data-section="library" href="#library" class="section-link library"><i class="fa sidebar-icon fa-music"></i> Library</a></li>
+        <li><a data-section="results" href="#results" class="section-link results"><i class="fa sidebar-icon fa-reorder"></i> Results</a></li>
+        <li class="now-playing-drop active"><a data-id="1" data-section="now-playing" href="#now-playing" class="section-link now-playing"><i class="fa sidebar-icon fa-play-circle-o"></i> Now playing</a></li>
+        <li class="nav-divider"></li>
+      </ul>
+        <p class="nav-text">Playlists<span class="pull-right new-playlist"><a href="#" id="new-playlist-button"><i class="fa fa-plus"></i></a></span></p>
+        <div class="new-playlist-ui" style="display: none;">
+            <form id="new-playlist">
+              <div class="input-group">
+                <input type="text" class="form-control new-playlist-input" placeholder="Playlist name...">
+              </div> 
+            </form>
+        </div>
+      <ul class="nav nav-sidebar playlist-links">
+        {% for playlist in playlists %}
+        <li class="playlist-item"><a data-section="playlist" data-id="{{ playlist.id }}" href="#playlist" class="playlist-link"><i class="fa sidebar-icon fa-file-audio-o"></i> {{ playlist.name }}</a></li>
+        {% endfor %}
+      </div>
+      <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+        <div class="search-container">
+          <form id="search">
+            <div class="input-group">
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
+              </span>
+              <input type="text" class="form-control search-input" placeholder="Search for...">
+            </div> 
+          </form>
+          <div class="alert alert-warning search-no-results" role="alert"><strong>Uh-oh!</strong> Couldn't find any tracks that matched your search</div>
+        </div>
+
+        <div class="section-container">
+
+          <div class="section active now-playing">
+
+            <h2 class="sub-header">Now playing</h2>
+
+            <table class="table table-condensed table-hover playlist now-playing">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Artist</th>
+                  <th>Album</th>
+                  <th>Duration</th>
+                </tr>
+              </thead>
+              <tbody data-playlist="1">
+                {% for track in tracks %}
+                <tr class="track" data-id="{{track.id}}" data-artist="{{track.artist}}" data-title="{{track.title}}" data-album="{{track.album}}" data-duration="{{track.duration}}" data-pt="{{track.pt}}">
+                  <td>{{ track.title }}</td>
+                  <td>{{ track.artist }} </td>
+                  <td class="details-album">{{ track.album }}</td>
+                  <td>{{ track.duration }}</td>
+                  <!-- <td><a class="remove&#45;track"><i class="fa fa&#45;remove"></i></a></td> -->
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+          </div>
+
+          <div class="section library">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="list-group artist-list">
+                  <a href="#" class="artist-filter artist-filter-all list-group-item">
+                    All Artists
+                  </a>
+                  {% for artist in artists %}
+                  <a data-artist="{{artist.title}}" href="#" class="artist-filter list-group-item">{{ artist.title }}</a>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="list-group album-list">
+                  <a href="#" class="album-filter album-filter-all list-group-item">
+                    All Songs
+                  </a>
+                  {% for album in albums %}
+                  <a href="#" data-artist="{{album.artist}}" data-album="{{album.title}}" class="album-filter list-group-item">{{ album.title }}</a>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section results">
+
+            <h2 class="sub-header">Results</h2>
+
+            <h3 class="results-info"></h3>
+
+            <table class="table table-condensed table-hover playlist results">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Artist</th>
+                  <th>Album</th>
+                  <th>Duration</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="track">
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+
+          <div class="section user-playlist">
+
+            <h2 class="sub-header">Playlist</h2>
+
+            <h3 class="user-playlist-info"></h3>
+
+            <table class="table table-condensed table-hover playlist user-playlist">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Artist</th>
+                  <th>Album</th>
+                  <th>Duration</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="track">
+                </tr>
+              </tbody>
+            </table>
+
+            <button type="button" class="btn btn-warning delete-playlist"><i class="fa fa-trash-o"></i> Delete this playist</button>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+    <script type="text/javascript" src="static/lib/jquery.min.js"></script>
+    <script type="text/javascript" src="static/lib/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="static/lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="static/app.js"></script>
+  </body>
+  </html>
