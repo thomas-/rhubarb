@@ -27,7 +27,7 @@ using the scanner. You can do this by running:
     python scanner.py init
 
 To update the database at a later date, eg, to add new files and have them
-be propageted to the database run:
+be added to the database run:
 
     python scanner.py update
 
