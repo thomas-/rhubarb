@@ -5,6 +5,8 @@ rhubarb - A Music Streaming Web-app
 Rhubarb runs on your server or local machine, and allows playback of music
 through a media player interface via the browser.
 
+
+
 Setup: 
 ------
 
@@ -52,4 +54,10 @@ Tests:
 The test suite can be run by executing
 
     python tests.py
+    
+Screenshots:
+------------
 
+![Now playing](http://i.imgur.com/fsPYfrH.png "Now playing")
+
+![Library](http://i.imgur.com/CfnGQCd.png "Library view")
